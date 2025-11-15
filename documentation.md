@@ -3,7 +3,7 @@
 **Architecture:** Medallion (Bronze → Silver → Gold)  
 **Goal:** Build a clean production-style data pipeline and create an ML-ready dataset for loan default prediction.
 
-This repository includes the full SQL implementation for the data model, ETL pipeline, and final ML feature view.
+This repository includes the Pyhton data cleaning and SQL implementation for the data model, ETL pipeline, and final ML feature view.
 
 ---
 
@@ -21,10 +21,68 @@ This ensures clarity, scalability, and professional-grade data usability.
 ---
 
 # 🥉 2. Bronze Layer (landing)
-**File:** `table_scrtips_landing.sql`
+**File:** `table_scrtips_landing.sql` and `main.ipynb`
 
 The Bronze layer stores cleaned data sent from Python.  
 It acts as a landing zone — no strict constraints and no transformations in SQL.
+
+
+# 🐍 0. Python Layer – Data Cleaning & Landing Upload
+**File:** `main.ipynb`
+
+Before data enters SQL, all raw CSVs are cleaned inside the `main.ipynb` notebook.  
+This notebook performs:
+
+### ✔ Data loading  
+Reads the 6 main CSV files:
+- application_metadata.csv  
+- demographics.csv  
+- financial_ratios.csv  
+- loan_details.csv  
+- credit_history.csv  
+- geographic_data.csv  
+
+### ✔ Cleaning & Standardization  
+- Converts numerical fields to correct numeric types  
+- Fixes inconsistent strings (upper/lowercase, trailing spaces)  
+- Normalizes categories  
+- Handles missing values where appropriate  
+- Ensures IDs align across all datasets  
+- Validates row counts before loading  
+
+### ✔ Renaming & Consistency Mapping  
+Column names are aligned with the SQL landing tables created in  
+`table_scrtips_landing.sql`.
+
+Example mappings:
+- `cust_id` → `customer_id`  
+- `customer_ref` → `customer_id`  
+- `monthly_payment` → `monthly_payment` (loan)  
+- 0/1 flags remain integers (SQL converts them later)
+
+### ✔ Upload to SQL Landing Layer  
+The notebook writes each cleaned dataframe to the corresponding SQL **landing** table:
+
+| DataFrame                     | Landing Table                       |
+|-------------------------------|--------------------------------------|
+| df_application_metadata       | landing.application_metadata_clean   |
+| df_demographics               | landing.demographics_clean           |
+| df_financial_ratios           | landing.financial_ratios_clean       |
+| df_loan_details               | landing.loan_details_clean           |
+| df_credit_history             | landing.credit_history_clean         |
+| df_geographic_data            | landing.geographic_data_clean        |
+
+This step completes the Bronze ingestion process.
+
+### ✔ Purpose of the Python Layer
+The Python notebook ensures that:
+- SQL receives fully cleaned, validated data  
+- SQL does not need to perform heavy transformations  
+- The ETL procedure (`sp_load_landing_to_stage.sql`) can run safely  
+- The final dataset is consistent and ML-ready  
+
+The notebook is part of the pipeline design and should be kept alongside the SQL code for reproducibility and version control.
+
 
 ### Bronze Tables
 - `landing.application_metadata_clean`
