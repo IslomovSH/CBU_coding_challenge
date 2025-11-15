@@ -1,13 +1,13 @@
-# 📘 CBU Coding Challenge – Data Pipeline & Modeling
+# CBU Coding Challenge
 **Team:** MAAB Academy  
 **Architecture:** Medallion (Bronze → Silver → Gold)  
-**Goal:** Build a clean production-style data pipeline and create an ML-ready dataset for loan default prediction.
+
 
 This repository includes the Pyhton data cleaning and SQL implementation for the data model, ETL pipeline, and final ML feature view.
 
 ---
 
-# 🚀 1. Project Overview
+#Overview
 This project transforms multiple cleaned CSV datasets into a structured, analytical, and machine-learning–ready model.
 
 We follow the Medallion architecture:
@@ -161,4 +161,34 @@ The final ML-ready dataset is built in:
 ## `mart.vw_loan_default_features`
 
 This view joins all Silver tables using `customer_id` and `application_id`, giving **one row per loan application**.
+
+
+# 🧮 10. Modeling & AUC Evaluation
+
+Once the `mart.vw_loan_default_features` view is created, we use it as the
+single source of truth for machine learning.
+
+- **Target column:** `target_default_flag`
+- **Problem type:** Binary classification (default vs no default)
+- **Main metric:** ROC AUC (Area Under the ROC Curve)
+
+### Workflow
+
+1. Export the view `mart.vw_loan_default_features` to a CSV  
+   (e.g., `loan_default_features.csv`) or read it directly from SQL.
+2. Drop ID columns (`customer_id`, `application_id`) from the feature set.
+3. One-hot encode categorical columns.
+4. Split into train/test sets (stratified by `target_default_flag`).
+5. Train a baseline model (Logistic Regression or tree-based model).
+6. Predict default probabilities.
+7. Evaluate performance using `roc_auc_score` from scikit-learn.
+
+AUC is used instead of plain accuracy because:
+
+- The classes can be imbalanced (few defaults vs many non-defaults)
+- We care more about ranking risky customers higher than safe ones
+- AUC is threshold-independent and focuses on discrimination power
+
+
+
 
