@@ -20,20 +20,20 @@ This ensures clarity, scalability, and professional-grade data usability.
 
 ---
 
-# 🥉 2. Bronze Layer (landing)
+# 2. Bronze Layer (landing)
 **File:** `table_scrtips_landing.sql` and `main.ipynb`
 
 The Bronze layer stores cleaned data sent from Python.  
 It acts as a landing zone — no strict constraints and no transformations in SQL.
 
 
-# 🐍 0. Python Layer – Data Cleaning & Landing Upload
+# 0. Python Layer – Data Cleaning & Landing Upload
 **File:** `main.ipynb`
 
 Before data enters SQL, all raw CSVs are cleaned inside the `main.ipynb` notebook.  
 This notebook performs:
 
-### ✔ Data loading  
+###  Data loading  
 Reads the 6 main CSV files:
 - application_metadata.csv  
 - demographics.csv  
@@ -42,7 +42,7 @@ Reads the 6 main CSV files:
 - credit_history.csv  
 - geographic_data.csv  
 
-### ✔ Cleaning & Standardization  
+###  Cleaning & Standardization  
 - Converts numerical fields to correct numeric types  
 - Fixes inconsistent strings (upper/lowercase, trailing spaces)  
 - Normalizes categories  
@@ -50,7 +50,7 @@ Reads the 6 main CSV files:
 - Ensures IDs align across all datasets  
 - Validates row counts before loading  
 
-### ✔ Renaming & Consistency Mapping  
+###  Renaming & Consistency Mapping  
 Column names are aligned with the SQL landing tables created in  
 `table_scrtips_landing.sql`.
 
@@ -60,7 +60,7 @@ Example mappings:
 - `monthly_payment` → `monthly_payment` (loan)  
 - 0/1 flags remain integers (SQL converts them later)
 
-### ✔ Upload to SQL Landing Layer  
+###  Upload to SQL Landing Layer  
 The notebook writes each cleaned dataframe to the corresponding SQL **landing** table:
 
 | DataFrame                     | Landing Table                       |
@@ -74,7 +74,7 @@ The notebook writes each cleaned dataframe to the corresponding SQL **landing** 
 
 This step completes the Bronze ingestion process.
 
-### ✔ Purpose of the Python Layer
+###  Purpose of the Python Layer
 The Python notebook ensures that:
 - SQL receives fully cleaned, validated data  
 - SQL does not need to perform heavy transformations  
@@ -102,7 +102,7 @@ These tables mirror the Python-cleaned CSVs:
 
 ---
 
-# 🥈 3. Silver Layer (stg)
+#  3. Silver Layer (stg)
 **File:** `table_scripts_staging.sql`
 
 Silver is a normalized, relational data model centered around **customer_id**.
@@ -127,7 +127,7 @@ The Silver layer turns semi-clean Bronze data into a structured relational wareh
 
 ---
 
-# 🔄 4. ETL: Bronze → Silver
+#  4. ETL: Bronze → Silver
 **File:** `sp_loading_landing_to_stage.sql`
 
 The stored procedure `sp_load_landing_to_stage`:
@@ -153,7 +153,7 @@ This ensures the Silver layer stays synchronized with the Bronze clean data.
 
 ---
 
-# 🥇 5. Gold Layer (mart)
+#  5. Gold Layer (mart)
 **File:** `gold_layer_mart.sql`
 
 The final ML-ready dataset is built in:
@@ -163,7 +163,7 @@ The final ML-ready dataset is built in:
 This view joins all Silver tables using `customer_id` and `application_id`, giving **one row per loan application**.
 
 
-# 🧮 10. Modeling & AUC Evaluation
+#  10. Modeling & AUC Evaluation
 
 Once the `mart.vw_loan_default_features` view is created, we use it as the
 single source of truth for machine learning.
@@ -183,11 +183,7 @@ single source of truth for machine learning.
 6. Predict default probabilities.
 7. Evaluate performance using `roc_auc_score` from scikit-learn.
 
-AUC is used instead of plain accuracy because:
 
-- The classes can be imbalanced (few defaults vs many non-defaults)
-- We care more about ranking risky customers higher than safe ones
-- AUC is threshold-independent and focuses on discrimination power
 
 
 
