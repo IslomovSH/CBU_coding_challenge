@@ -1,7 +1,7 @@
 /*===============================================================
   Object  : mart.loan_default_features
   Project : CBU Code Challenge Hackathon
-  Layer   : Gold (mart) – ML Training Dataset
+  Layer   : Gold (mart) â€“ ML Training Dataset
   Team    : MAAB Academy
   Date    : 2025-11-15
 
